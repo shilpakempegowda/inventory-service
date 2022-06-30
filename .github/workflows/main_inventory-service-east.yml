@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'inventory-service-east'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6A7FE8BF5848484EBFB37309305D8C25 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E6F547F5D9E14401A5608A5BA533CDE5 }}
           package: '*.jar'
