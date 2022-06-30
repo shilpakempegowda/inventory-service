@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.6.5</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example.hcaas</groupId>
+	<artifactId>inventory-service</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>inventory-service</name>
+	<description>Demo project for Spring Boot</description>
+
+	<properties>
+		<java.version>11</java.version>
+		<maven-shared-utils.version>3.3.4</maven-shared-utils.version>
+		<commons-collections.maven-plugins-version>3.2.2
+		</commons-collections.maven-plugins-version>
+		<xstream.maven-plugins-version>1.4.19</xstream.maven-plugins-version>
+		<jacoco.version>0.8.7</jacoco.version>
+
+		<!-- Need to set sonar.projectKey for each app -->
+		<sonar.projectKey>UNDEFINED</sonar.projectKey>
+		<sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+		<sonar.sources>./src/main/java</sonar.sources>
+		<sonar.tests>./src/test/java</sonar.tests>
+		<sonar.test.inclusions>**/*Test*/**</sonar.test.inclusions>
+		<sonar.exclusions>**/*Test*/**</sonar.exclusions>
+		<spring-cloud-azure.version>4.0.0</spring-cloud-azure.version>
+		<spring-cloud.version>2021.0.2</spring-cloud.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bootstrap</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.azure.spring</groupId>
+			<artifactId>spring-cloud-azure-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.azure</groupId>
+			<artifactId>spring-cloud-starter-azure-spring-cloud-client
+			</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.18</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-sleuth</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-sleuth-zipkin</artifactId>
+		</dependency>
+
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.azure.spring</groupId>
+				<artifactId>spring-cloud-azure-dependencies</artifactId>
+				<version>${spring-cloud-azure.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.honton.chas</groupId>
+				<artifactId>exists-maven-plugin</artifactId>
+				<version>0.0.6</version> <!-- Latest version that works in Maven 3.3.9 -->
+				<executions>
+					<execution>
+						<id>artifactory-check</id>
+						<goals>
+							<goal>remote</goal>
+						</goals>
+						<phase>deploy</phase>
+						<configuration>
+							<failIfExists>true</failIfExists>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version> <!-- Upgrade from 3.2.1, used by maven-clean-plugin:3.1.0 -->
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version> <!-- Upgrade from 3.2.1, used in build-helper-maven-plugin:3.2.0 -->
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version> <!-- Upgrade from 3.2.1, used in maven-compiler-plugin:3.8.1 -->
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version> <!-- Upgrade from 3.2.1, used in maven-jar-plugin:3.1.1 -->
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version> <!-- Upgrade from 3.2.1, used in maven-jar-plugin:3.2.1 -->
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version> <!-- Upgrade from 3.2.1, used in maven-install-plugin:2.5.2 -->
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version> <!-- Upgrade from 3.2.1, used in versions-maven-plugin:2.8.1 -->
+						</dependency>
+						<dependency>
+							<groupId>commons-collections</groupId>
+							<artifactId>commons-collections</artifactId>
+							<version>${commons-collections.maven-plugins-version}</version> <!-- Upgrade from 3.2.1, used in versions-maven-plugin:2.8.1 -->
+						</dependency>
+						<dependency>
+							<groupId>org.apache.maven.doxia</groupId>
+							<artifactId>doxia-site-renderer</artifactId>
+							<version>1.7</version>  <!-- doxia-site-renderer 1.7 is the version used by versions-maven-plugin 
+								2.8.1 -->
+							<exclusions>
+								<!-- velocity 1.7 is blocked by XRay, and there is no non-vulnerable 
+									backwards compatible version. versions:set goal seems to work without velocity, 
+									however YMMV -->
+								<exclusion>
+									<groupId>org.apache.velocity</groupId>
+									<artifactId>velocity</artifactId>
+								</exclusion>
+							</exclusions>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version> <!-- Upgrade from 3.2.1, used by maven-dependency-plugin:2.8 -->
+						</dependency>
+						<dependency>
+							<groupId>org.apache.maven.doxia</groupId>
+							<artifactId>doxia-site-renderer</artifactId>
+							<version>1.9.2</version>  <!-- doxia-site-renderer 1.9.2 is the version used by maven-dependency-plugin 
+								3.2.0 -->
+							<exclusions>
+								<!-- velocity 1.7 is blocked by XRay, and there is no non-vulnerable 
+									backwards compatible version. dependency:tree goal seems to work without 
+									velocity, however YMMV -->
+								<exclusion>
+									<groupId>org.apache.velocity</groupId>
+									<artifactId>velocity</artifactId>
+								</exclusion>
+							</exclusions>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-help-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.shared</groupId>
+							<artifactId>maven-shared-utils</artifactId>
+							<version>${maven-shared-utils.version}</version> <!-- Upgrade from 3.2.1, used in maven-help-plugin:3.2.0 -->
+						</dependency>
+						<dependency>
+							<groupId>com.thoughtworks.xstream</groupId>
+							<artifactId>xstream</artifactId>
+							<version>${xstream.maven-plugins-version}</version> <!-- Upgrade from 1.4.11.1, used in maven-help-plugin:3.2.0 -->
+						</dependency>
+						<dependency>
+							<groupId>org.apache.maven.plugin-tools</groupId>
+							<artifactId>maven-plugin-tools-generators</artifactId>
+							<version>3.5.2</version>  <!-- maven-plugin-tools-generators 3.5.2 is the version used by versions-maven-plugin 
+								2.8.1 -->
+							<exclusions>
+								<!-- velocity 1.7 is blocked by XRay, and there is no non-vulnerable 
+									backwards compatible version. versions:set goal seems to work without velocity, 
+									however YMMV -->
+								<exclusion>
+									<groupId>org.apache.velocity</groupId>
+									<artifactId>velocity</artifactId>
+								</exclusion>
+							</exclusions>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>com.github.ferstl</groupId>
+					<artifactId>depgraph-maven-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>com.fasterxml.jackson.core</groupId>
+							<artifactId>jackson-databind</artifactId>
+							<version>2.9.10.8</version> <!-- Upgrade from 2.9.8, used in depgraph-maven-plugin:3.3.0 -->
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>com.google.code.maven-replacer-plugin</groupId>
+					<artifactId>replacer</artifactId>
+					<version>1.5.3</version>
+					<dependencies>
+						<dependency>
+							<groupId>xerces</groupId>
+							<artifactId>xercesImpl</artifactId>
+							<version>2.12.2</version> <!-- Upgrade from 2.8.0 (vulnerability CVE-2022-23437), used in replacer:1.5.3 -->
+						</dependency>
+					</dependencies>
+				</plugin>
+
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<mainClass>com.example.hcaas.inventoryservice.InventoryServiceApplication
+						</mainClass>
+						<executable>true</executable>
+						<fork>true</fork>
+					</configuration>
+
+					<executions>
+						<execution>
+							<goals>
+								<goal>repackage</goal>
+							</goals>
+						</execution>
+					</executions>
+
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.openapitools</groupId>
+										<artifactId>openapi-generator-maven-plugin</artifactId>
+										<versionRange>[3.0.0,)</versionRange>
+										<goals>
+											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.google.code.maven-replacer-plugin</groupId>
+										<artifactId>replacer</artifactId>
+										<versionRange>[1.5.3,)</versionRange>
+										<goals>
+											<goal>replace</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+</project>
